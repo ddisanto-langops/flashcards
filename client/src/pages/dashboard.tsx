@@ -1,88 +1,127 @@
+import { NavBar } from "../components/navbar.tsx"
+import { useState } from "react"
 import type { Flashcard } from "../../types/flashcard.ts"
-//import React, { useState, useEffect } from "react"
-import { getAllCards } from "../../services/api"
-import { useQuery } from "@tanstack/react-query"
+import { getAllCards, deleteCard } from "../../services/api"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   createColumnHelper,
   getFilteredRowModel,
-  flexRender
+  flexRender,
 } from '@tanstack/react-table'
+import type { RowSelectionState } from '@tanstack/react-table'
 
 const columnHelper = createColumnHelper<Flashcard>()
 
 const columns = [
-  columnHelper.accessor('title', {
-    header: 'Title'
+  columnHelper.display({
+    id: 'select',
+    header: ({ table }) => (
+      <input
+        type="checkbox"
+        checked={table.getIsAllPageRowsSelected()}
+        onChange={table.getToggleAllPageRowsSelectedHandler()}
+      />
+    ),
+    cell: ({ row }) => (
+      <input
+        type="checkbox"
+        checked={row.getIsSelected()}
+        disabled={!row.getCanSelect()}
+        onChange={row.getToggleSelectedHandler()}
+      />
+    ),
   }),
-  columnHelper.accessor('frontText', {
-    header: "Front Text"
-  }),
-  columnHelper.accessor('backText', {
-    header: "Back Text"
-  }),
-  columnHelper.accessor('createdAt', {
-    header: "Created"
-  }),
-  columnHelper.accessor('updatedAt', {
-    header: "Modified"
-  })
+  columnHelper.accessor('title', { header: 'Title' }),
+  columnHelper.accessor('frontText', { header: "Front Text" }),
+  columnHelper.accessor('backText', { header: "Back Text" }),
+  columnHelper.accessor('createdAt', { header: "Created" }),
+  columnHelper.accessor('updatedAt', { header: "Modified" })
 ]
 
 export function Dashboard() {
-    
-    const { data = [], isLoading, isError } = useQuery({
+  const queryClient = useQueryClient()
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+  const { data = [], isLoading, isError } = useQuery({
     queryKey: ['cards'],
     queryFn: getAllCards
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      return Promise.all(ids.map(id => deleteCard(id)))
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cards'] })
+      setRowSelection({})
+    }
+  })
 
   const table = useReactTable({
     data,
     columns,
+    state: { rowSelection },
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getRowId: (row) => row.id,
   });
 
+  const handleDelete = () => {
+    const selectedIds = Object.keys(rowSelection)
+    if (confirm(`Delete ${selectedIds.length} items?`)) {
+      deleteMutation.mutate(selectedIds)
+    }
+  }
 
   if (isLoading) return <p>Loading...</p>
   if (isError) return <p>Error loading products.</p>
   
   return (
     <>
-    <table id="completions-table">
-      <thead id="completions-table-head">
+    <NavBar />
+    <div style={{ marginBottom: '10px' }}>
+      <button 
+        onClick={handleDelete} 
+        disabled={Object.keys(rowSelection).length === 0 || deleteMutation.isPending}
+      >
+        {deleteMutation.isPending ? 'Deleting...' : 'Delete Selected'}
+      </button>
+    </div>
+
+    <table id="cards-table">
+      <thead id="cards-table-head">
         {table.getHeaderGroups().map(headerGroup => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => {
-              return (
+            {headerGroup.headers.map(header => (
               <th key={header.id}>
                 <div
                   className="table-sort-div"
-                  title="Click to sort"
                   onClick={header.column.getToggleSortingHandler()}
                   style={{ cursor: 'pointer' }}
-              >
+                >
                   {flexRender(header.column.columnDef.header, header.getContext())}
-                  {header.column.getIsSorted() === 'asc' ? ' ↑'
-                  : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                  {header.column.getIsSorted() === 'asc' ? ' ↑' : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
                 </div>
-              <input
-                className="table-filter"
-                placeholder="Filter..."
-                onChange={e => header.column.setFilterValue(e.target.value)}
-              />
+                {header.column.id !== 'select' && (
+                  <input
+                    className="table-filter"
+                    placeholder="Filter..."
+                    onChange={e => header.column.setFilterValue(e.target.value)}
+                  />
+                )}
               </th>
-          )})}
+            ))}
           </tr>
         ))}
       </thead>
-      <tbody id="completions-table-body">
+      <tbody id="cards-table-body">
         {table.getRowModel().rows.map(row => (
-          <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id}>
+          <tr className="table-row" key={row.id}>
             {row.getVisibleCells().map(cell => (
               <td className="table-data" key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

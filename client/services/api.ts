@@ -20,11 +20,8 @@ export async function createCard(flashcard: CreateFlashcardInput) {
 };
 
 export async function deleteCard(cardId: string) {
-    const params = new URLSearchParams({
-        cardId: cardId
-    });
 
-    const url = `/api/data/delete/${params}`;
+    const url = `/api/data/delete/${cardId}`;
     
     try {
         const response = await fetch(url, {

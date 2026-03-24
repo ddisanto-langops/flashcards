@@ -65,20 +65,25 @@ router.post("/api/data/add", async (req: Request, res: Response) => {
 });
 
 
-router.delete("/api/data/delete", async (req: Request, res: Response) => {
+router.delete("/api/data/delete/:cardId", async (req: Request, res: Response) => {
     try {
-        const { cardId } = req.params;
+        const cardId = req.params.cardId;
+        console.log(`Received delete request for card ${cardId}`)
         const result = await pool.query(`
         DELETE FROM flashcards WHERE id = $1
         RETURNING *
         `, [cardId]
         );
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Record not found' })
+            return res.status(404).json({ error: 'Record not found' });
         }
+        res.status(200).json({
+            status: "success",
+            deleted: cardId
+        })
     } catch (error) {
-        res.status(500).json({error: (error as Error).message})
+        res.status(500).json({error: (error as Error).message});
     }
-})
+});
 
 export default router;
