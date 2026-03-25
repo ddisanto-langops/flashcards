@@ -1,7 +1,8 @@
-import { NavBar } from "../components/navbar.tsx"
+import { NavBar } from "./navbar.tsx"
+import { Modal } from "./modal.tsx"
 import { useState } from "react"
 import type { Flashcard } from "../../types/flashcard.ts"
-import { getAllCards, deleteCard } from "../../services/api"
+import { getAllCards, deleteCard } from "../../services/api.ts"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import {
   useReactTable,
@@ -13,6 +14,10 @@ import {
 } from '@tanstack/react-table'
 import type { RowSelectionState } from '@tanstack/react-table'
 
+
+/* 
+Table Setup 
+*/
 const columnHelper = createColumnHelper<Flashcard>()
 
 const columns = [
@@ -41,9 +46,21 @@ const columns = [
   columnHelper.accessor('updatedAt', { header: "Modified" })
 ]
 
+
+
 export function Dashboard() {
+
   const queryClient = useQueryClient()
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalData, setModalData] = useState<Flashcard>();
+
+  const handleRowClick = (row: Flashcard) => {
+    setModalVisible(true)
+    setModalData(row)
+  }
+  
 
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['cards'],
@@ -84,6 +101,7 @@ export function Dashboard() {
   return (
     <>
     <NavBar />
+    <Modal isVisible={modalVisible} data={modalData}/>
     <div style={{ marginBottom: '10px' }}>
       <button 
         onClick={handleDelete} 
@@ -121,7 +139,7 @@ export function Dashboard() {
       </thead>
       <tbody id="cards-table-body">
         {table.getRowModel().rows.map(row => (
-          <tr className="table-row" key={row.id}>
+          <tr className="table-row" key={row.id} onClick={() => handleRowClick(row.original)}>
             {row.getVisibleCells().map(cell => (
               <td className="table-data" key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

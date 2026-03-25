@@ -117,3 +117,9 @@ th:first-child, td:first-child {
   padding: 5px;
   justify-content: flex-start;
 }
+
+
+/*Modal*/
+.modal-div { 
+  background-color: #2e3253;
+}
