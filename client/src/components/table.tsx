@@ -1,5 +1,3 @@
-import { NavBar } from "./navbar.tsx"
-import { Modal } from "./modal.tsx"
 import { useState } from "react"
 import type { Flashcard } from "../../types/flashcard.ts"
 import { getAllCards, deleteCard } from "../../services/api.ts"
@@ -12,12 +10,14 @@ import {
   getFilteredRowModel,
   flexRender,
 } from '@tanstack/react-table'
-import type { RowSelectionState } from '@tanstack/react-table'
+import type { RowSelectionState, Table } from '@tanstack/react-table'
 
 
-/* 
-Table Setup 
-*/
+interface TableProps {
+  handleRowClick: (row: Flashcard) => void;
+}
+
+
 const columnHelper = createColumnHelper<Flashcard>()
 
 const columns = [
@@ -48,20 +48,11 @@ const columns = [
 
 
 
-export function Dashboard() {
-
-  const queryClient = useQueryClient()
+export function Table({handleRowClick}: TableProps) {
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalData, setModalData] = useState<Flashcard>();
-
-  const handleRowClick = (row: Flashcard) => {
-    setModalVisible(true)
-    setModalData(row)
-  }
   
-
+  const queryClient = useQueryClient()
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['cards'],
     queryFn: getAllCards
@@ -100,8 +91,6 @@ export function Dashboard() {
   
   return (
     <>
-    <NavBar />
-    <Modal isVisible={modalVisible} data={modalData}/>
     <div style={{ marginBottom: '10px' }}>
       <button 
         onClick={handleDelete} 
