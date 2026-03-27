@@ -1,3 +1,5 @@
+import type { RowSelectionState, Table } from '@tanstack/react-table'
+import { formatDate } from "../../services/formatDate.ts"
 import { useState } from "react"
 import type { Flashcard } from "../../types/flashcard.ts"
 import { getAllCards } from "../../services/api.ts"
@@ -10,7 +12,6 @@ import {
   getFilteredRowModel,
   flexRender,
 } from '@tanstack/react-table'
-import type { RowSelectionState, Table } from '@tanstack/react-table'
 
 
 interface TableProps {
@@ -21,31 +22,17 @@ interface TableProps {
 const columnHelper = createColumnHelper<Flashcard>()
 
 const columns = [
-  /*
-  columnHelper.display({
-    id: 'select',
-    header: ({ table }) => (
-      <input
-        type="checkbox"
-        checked={table.getIsAllPageRowsSelected()}
-        onChange={table.getToggleAllPageRowsSelectedHandler()}
-      />
-    ),
-    cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.getIsSelected()}
-        disabled={!row.getCanSelect()}
-        onChange={row.getToggleSelectedHandler()}
-      />
-    ),
-  }),
-  */
   columnHelper.accessor('title', { header: 'Title' }),
   columnHelper.accessor('frontText', { header: "Front Text" }),
   columnHelper.accessor('backText', { header: "Back Text" }),
-  columnHelper.accessor('createdAt', { header: "Created" }),
-  columnHelper.accessor('updatedAt', { header: "Modified" })
+  columnHelper.accessor('createdAt', { 
+    header: "Created",
+    cell: info => formatDate(info.getValue())
+  }),
+  columnHelper.accessor('updatedAt', { 
+    header: "Modified",
+    cell: info => formatDate(info.getValue())
+  })
 ]
 
 
@@ -107,7 +94,7 @@ export function Table({handleRowClick}: TableProps) {
         {table.getRowModel().rows.map(row => (
           <tr className="table-row" key={row.id} onClick={() => handleRowClick(row.original)}>
             {row.getVisibleCells().map(cell => (
-              <td className="table-data" key={cell.id}>
+              <td className="table-data" key={cell.id} data-label={cell.column.columnDef.header}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}

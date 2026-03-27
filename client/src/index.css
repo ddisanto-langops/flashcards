@@ -10,38 +10,13 @@ body {
 #create-button-div {
   justify-self: center;
   margin: 10px;
+  position: sticky;
+  top: 0px;
 }
 
 #create-button {
   font-size: 2rem;
 }
-
-/* =====================
-   NAVBAR
-   ===================== */
-#navbar-div {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    align-content: center;
-    padding: 10px;
-}
-
-#navbar {
-    display: flex;
-    align-items: center;
-    border: 1px solid rgba(32, 101, 190, 0.418);
-    box-shadow: 0px 0px 4px 2px hsla(28, 91%, 57%, 0.795);
-    border-radius: 8px;
-}
-
-.navbar-link {
-    margin: 10px;
-    margin-left: 20px;
-    color: hsla(28, 91%, 57%, 0.795);
-    font-size: 1.3rem;
-}
-
 
 
 /* Container & Button Styles */
@@ -200,4 +175,120 @@ th:first-child, td:first-child {
   display: flex;
   gap: 40px;
   justify-self: center;
+}
+
+
+/* =====================
+   MOBILE VIEW (max-width: 768px)
+   ===================== */
+@media screen and (max-width: 768px) {
+  
+  /* 1. TABLE TO CARDS TRANSFORMATION */
+  /* We hide the header and make every row a standalone "block" */
+  #cards-table, 
+  #cards-table-head, 
+  #cards-table-body, 
+  .table-row, 
+  .table-data {
+    display: block;
+    width: 100%;
+  }
+
+  #cards-table {
+    width: 100%; /* Ensure it doesn't stay at 90% from your desktop style */
+    display: block;
+    margin: 0;
+  }
+
+  #cards-table-head {
+    display: none; /* Hide the headers on mobile */
+  }
+
+  .table-row {
+    width: 100%;
+    display: block;
+    box-sizing: border-box;
+    background-color: #2e3253 !important;
+    color: white;
+    padding: 15px;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .table-data {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    max-width: 100%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 5px;
+    white-space: normal; /* Allow text to wrap on mobile */
+    overflow: visible;
+  }
+
+  .table-data:first-child {
+    width: 100% !important;
+    text-align: left; /* Change from 'center' */
+  }
+
+  /* Add labels back in for context since we hid the header */
+  .table-data::before {
+    min-width: 80px;
+    flex-shrink: 0;
+    content: attr(data-label); /* Requires adding data-label="Title" to your <td> tags */
+    font-weight: bold;
+    color: hsla(28, 91%, 57%, 0.795);
+    margin-right: 10px;
+  }
+
+  .table-data > * {
+    flex-grow: 1;         /* Takes up all remaining space */
+    word-break: break-word; /* Forces long words to wrap instead of push */
+    text-align: left;     /* Better readability for long titles */
+    white-space: normal;  /* Overrides the desktop 'nowrap' */
+  }
+
+  /* 2. MODAL ADJUSTMENTS */
+  .modal-content-div {
+    width: 95%; /* Take up almost full width */
+    padding: 1rem;
+    grid-gap: 10px;
+  }
+
+  .modal-field {
+    grid-template-columns: 1fr; /* Stack label on top of input */
+    grid-gap: 5px;
+    margin: 5px 0;
+    font-size: 1.1rem;
+  }
+
+  .modal-field input, 
+  .modal-field textarea {
+    width: 100%;
+    box-sizing: border-box; /* Prevents overflow */
+  }
+
+  .modal-buttons-div {
+    flex-direction: column; /* Stack buttons vertically */
+    width: 100%;
+    gap: 10px;
+  }
+
+  .modal-buttons-div button {
+    width: 100%;
+    padding: 15px; /* Larger touch targets for thumbs */
+  }
+
+  /* 3. NAVBAR */
+  #navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar-link {
+    font-size: 1rem;
+    margin: 5px 10px;
+  }
 }
