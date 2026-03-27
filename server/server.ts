@@ -13,12 +13,13 @@ const port = process.env.appPort || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json())
+
 app.use(router)
 
-app.use(express.static(path.join(__dirname,'../client/dist')))
+app.use(express.static(path.join(__dirname,'../../client/dist')))
 
 app.get('/{*path}', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'))
 })
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
