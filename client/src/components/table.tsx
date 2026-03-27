@@ -1,7 +1,7 @@
 import { useState } from "react"
 import type { Flashcard } from "../../types/flashcard.ts"
-import { getAllCards, deleteCard } from "../../services/api.ts"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { getAllCards } from "../../services/api.ts"
+import { useQuery } from "@tanstack/react-query"
 import {
   useReactTable,
   getCoreRowModel,
@@ -21,6 +21,7 @@ interface TableProps {
 const columnHelper = createColumnHelper<Flashcard>()
 
 const columns = [
+  /*
   columnHelper.display({
     id: 'select',
     header: ({ table }) => (
@@ -39,6 +40,7 @@ const columns = [
       />
     ),
   }),
+  */
   columnHelper.accessor('title', { header: 'Title' }),
   columnHelper.accessor('frontText', { header: "Front Text" }),
   columnHelper.accessor('backText', { header: "Back Text" }),
@@ -52,21 +54,10 @@ export function Table({handleRowClick}: TableProps) {
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   
-  const queryClient = useQueryClient()
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['flashcards'],
     queryFn: getAllCards
   });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (ids: string[]) => {
-      return Promise.all(ids.map(id => deleteCard(id)))
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cards'] })
-      setRowSelection({})
-    }
-  })
 
   const table = useReactTable({
     data,
@@ -79,27 +70,13 @@ export function Table({handleRowClick}: TableProps) {
     getRowId: (row) => row.id,
   });
 
-  const handleDelete = () => {
-    const selectedIds = Object.keys(rowSelection)
-    if (confirm(`Delete ${selectedIds.length} items?`)) {
-      deleteMutation.mutate(selectedIds)
-    }
-  }
+  
 
   if (isLoading) return <p>Loading...</p>
   if (isError) return <p>Error loading products.</p>
   
   return (
     <>
-    <div style={{ marginBottom: '10px' }}>
-      <button 
-        onClick={handleDelete} 
-        disabled={Object.keys(rowSelection).length === 0 || deleteMutation.isPending}
-      >
-        {deleteMutation.isPending ? 'Deleting...' : 'Delete Selected'}
-      </button>
-    </div>
-
     <table id="cards-table">
       <thead id="cards-table-head">
         {table.getHeaderGroups().map(headerGroup => (

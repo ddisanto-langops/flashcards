@@ -70,10 +70,11 @@ router.delete("/api/data/delete/:cardId", async (req: Request, res: Response) =>
         const cardId = req.params.cardId;
         console.log(`Received delete request for card ${cardId}`)
         const result = await pool.query(`
-        DELETE FROM flashcards WHERE id = $1
-        RETURNING *
-        `, [cardId]
+            DELETE FROM flashcards WHERE id = $1
+            RETURNING *
+            `, [cardId]
         );
+        
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Record not found' });
         }
