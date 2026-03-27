@@ -80,7 +80,38 @@ router.delete("/api/data/delete/:cardId", async (req: Request, res: Response) =>
         res.status(200).json({
             status: "success",
             deleted: cardId
-        })
+        });
+    } catch (error) {
+        res.status(500).json({error: (error as Error).message});
+    }
+});
+
+
+router.put("/api/data/edit/:cardId", async (req: Request, res: Response) => {
+    try {
+        const cardId = req.params.cardId;
+        const { title, frontText, backText } = req.body;
+        console.log(`Received edit for card ${cardId}`)
+        const result = await pool.query(`
+            UPDATE flashcards
+            SET
+                title = $1,
+                front_text = $2,
+                back_text = $3
+            WHERE
+                id = $4
+            RETURNING *
+            `,
+            [title, frontText, backText, cardId]
+        );
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Record not found' })
+        }
+        res.status(200).json({
+            status: "success",
+            edited: cardId
+        });
+
     } catch (error) {
         res.status(500).json({error: (error as Error).message});
     }

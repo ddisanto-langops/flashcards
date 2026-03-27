@@ -54,7 +54,7 @@ export function Table({handleRowClick}: TableProps) {
   
   const queryClient = useQueryClient()
   const { data = [], isLoading, isError } = useQuery({
-    queryKey: ['cards'],
+    queryKey: ['flashcards'],
     queryFn: getAllCards
   });
 

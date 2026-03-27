@@ -1,4 +1,4 @@
-import type { CreateFlashcardInput } from "../types/flashcard";
+import type { CreateFlashcardInput, Flashcard } from "../types/flashcard";
 
 export async function createCard(flashcard: CreateFlashcardInput) {
 
@@ -50,11 +50,8 @@ export async function getAllCards() {
 
 
 export async function getCard(cardId: string) {
-    const params = new URLSearchParams({
-        cardId: cardId
-    });
 
-    const url = `/api/data/${params}`
+    const url = `/api/data/${cardId}`
 
     try {
         const response = await fetch(url, {
@@ -64,5 +61,22 @@ export async function getCard(cardId: string) {
 
     } catch (error) {
         throw new Error(`Failed to get card ${cardId}: ${error}`)
+    }
+}
+
+
+export async function editCard(card: Flashcard) {
+    const url = `/api/data/edit/${card.id}`
+
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(card)
+        });
+        return response.json();
+
+    } catch (error) {
+        throw new Error(`Failed to edit card: ${error}`)
     }
 }
