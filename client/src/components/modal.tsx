@@ -6,8 +6,8 @@ import type React from 'react';
 interface ModalProps {
 	isVisible: boolean;
 	closeModal: () => void;
-	data: Flashcard | undefined;
-	setModalData: React.Dispatch<React.SetStateAction<Flashcard | undefined>>;
+	data: Flashcard | null;
+	setModalData: React.Dispatch<React.SetStateAction<Flashcard | null>>;
 };
 
 export function Modal({isVisible, data, setModalData, closeModal}:ModalProps) {
@@ -66,12 +66,8 @@ export function Modal({isVisible, data, setModalData, closeModal}:ModalProps) {
 					<input id='title' name='title' value={data.title} onChange={handleChange}/>
 				</div>
 				<div className='modal-field'>
-					<label htmlFor='front-text'>Front Text:</label>
-					<textarea id='front-text' name='frontText' value={data.frontText} onChange={handleChange}></textarea>
-				</div>
-				<div className='modal-field'>
-					<label htmlFor='back-text'>Back Text:</label>
-					<textarea id='back-text' name='back-Text' value={data.backText ?? ''} onChange={handleChange}></textarea>
+				<label htmlFor='text'>Text:</label>
+				<textarea id='text' name='text' value={data.text} onChange={handleChange}></textarea>
 				</div>
 				<div className='modal-buttons-div'>
 					<button type='submit'>Save</button>

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import pool from "../database/pool.js";
+import pool from "../database/pool.ts";
 
 const router = Router();
 
@@ -11,14 +11,12 @@ router.get("/api/data/all", async (req: Request, res: Response) => {
             SELECT
                 id,
                 title,
-                front_text as "frontText",
-                back_text as "backText",
-                created_at "createdAt",
+                text,
+                created_at as "createdAt",
                 updated_at as "updatedAt"
             FROM flashcards
-            
             `);
-            res.json(result.rows);
+        res.json(result.rows);
 
     } catch (error) {
         res.status(500).json({error: (error as Error).message})
@@ -26,21 +24,24 @@ router.get("/api/data/all", async (req: Request, res: Response) => {
 });
 
 
-router.get("/api/data", async (req: Request, res: Response) => {
+router.get("/api/data/:cardId", async (req: Request, res: Response) => {
     try {
         const { cardId } = req.params;
         const result = await pool.query(
             `
             SELECT
+                id,
                 title,
-                front_text,
-                back_text
+                text
             FROM flashcards
             WHERE id = $1
             `,
             [cardId]
         )
-        res.json(result.rows);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Record not found' });
+        }
+        res.json(result.rows[0]);
     } catch (error) {
         res.status(500).json({error: (error as Error).message})
     }
@@ -49,13 +50,13 @@ router.get("/api/data", async (req: Request, res: Response) => {
 
 router.post("/api/data/add", async (req: Request, res: Response) => {
     try {
-        const { title, frontText, backText } = req.body;
+        const { title, text } = req.body;
         const queryText = `
-            INSERT INTO flashcards (title, front_text, back_text)
-            VALUES ($1, $2, $3)
+            INSERT INTO flashcards (title, text)
+            VALUES ($1, $2)
             RETURNING *;
         `;
-        const values = [title, frontText, backText];
+        const values = [title, text];
         const result = await pool.query(queryText, values);
         res.status(201).json(result.rows[0]);
 
@@ -91,19 +92,18 @@ router.delete("/api/data/delete/:cardId", async (req: Request, res: Response) =>
 router.put("/api/data/edit/:cardId", async (req: Request, res: Response) => {
     try {
         const cardId = req.params.cardId;
-        const { title, frontText, backText } = req.body;
+        const { title, text } = req.body;
         console.log(`Received edit for card ${cardId}`)
         const result = await pool.query(`
             UPDATE flashcards
             SET
                 title = $1,
-                front_text = $2,
-                back_text = $3
+                text = $2
             WHERE
-                id = $4
+                id = $3
             RETURNING *
             `,
-            [title, frontText, backText, cardId]
+            [title, text, cardId]
         );
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Record not found' })

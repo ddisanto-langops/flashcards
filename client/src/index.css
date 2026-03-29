@@ -42,61 +42,55 @@ button:hover:not(:disabled) {
 
 /* Table Base */
 #cards-table {
-  width: 90%;
+  width: 100%;
   border-collapse: collapse;
-  font-family: sans-serif;
-  font-size: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Table Headers */
-#cards-table-head th {
+  table-layout: fixed; /* Keeps columns stable during drag */
   background-color: #2e3253;
   color: white;
-  padding: 12px 8px;
-  border-bottom: 2px solid #ddd;
+}
+
+/* Common Cell Styling */
+.table-row th, 
+.table-row td {
+  padding: 12px;
   text-align: left;
-}
-
-.table-sort-div {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 8px;
-  user-select: none;
-}
-
-.table-filter {
-  width: 100%;
-  padding: 4px 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  box-sizing: border-box;
-}
-
-/* Table Body */
-.table-row:nth-child(even) {
-  background-color: #fafafa;
-}
-
-.table-row:hover {
-  background-color: #3f8de7e5;
-}
-
-.table-data {
-  padding: 10px 8px;
-  border-bottom: 1px solid #eee;
-  max-width: 200px;
-  white-space: nowrap;
+  border-bottom: 1px solid #121635;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 60px; /* Match the TS height */
 }
 
-/* Checkbox specific sizing */
-th:first-child, td:first-child {
-  width: 40px;
-  text-align: center;
+/* Header Specifics */
+#cards-table-head th {
+  background-color: #1c1f3a;
+  vertical-align: top;
+  padding: 5px;
+}
+
+/* Hover effect */
+.table-row:hover {
+  background-color: #3b406d;
+  cursor: pointer;
+}
+
+/* Search Input */
+.table-filter {
+  width: 90%;
+  padding: 6px;
+  margin: 5px;
+  background: #121635;
+  color: white;
+  border: 1px solid #47495a;
+  border-radius: 4px;
+}
+
+/* Dragging State: Keep it simple */
+.table-row[style*="transform"] {
+  z-index: 9999;
+  background-color: #3b406d;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  /* Do NOT use display: table here; it causes the horizontal shrink */
 }
 
 

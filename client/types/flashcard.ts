@@ -1,8 +1,7 @@
 export interface Flashcard {
     id: string;
     title: string;
-    frontText: string;
-    backText: string | null;
+    text: string;
     createdAt: Date;
     updatedAt: Date | null;
 }

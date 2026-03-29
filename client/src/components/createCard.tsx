@@ -24,8 +24,7 @@ export function CreateCardModal({isVisible, closeModal}: CreateCardModalProps) {
 
     const [cardData, setcardData] = useState({
         title: '',
-        frontText: '',
-        backText: ''
+        text: ''
     });
     
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -40,8 +39,7 @@ export function CreateCardModal({isVisible, closeModal}: CreateCardModalProps) {
             // cleanup
         setcardData({
             title: "",
-            frontText: "",
-            backText: ""
+            text: ""
         });
     };
 
@@ -56,12 +54,8 @@ export function CreateCardModal({isVisible, closeModal}: CreateCardModalProps) {
                     <input id='create-title' name="title" value={cardData.title} onChange={handleInputChange}></input>
                 </div>
                 <div className='modal-field'>
-                    <label htmlFor='create-front-text'>Front Text:</label>
-                    <textarea id='create-front-text' name="frontText" value={cardData.frontText} onChange={handleInputChange}></textarea>
-                </div>
-                <div className='modal-field'>
-                    <label htmlFor='create-back-text'>Back Text:</label>
-                    <textarea id='create-back-text' name="backText" value={cardData.backText} onChange={handleInputChange}></textarea>
+                    <label htmlFor='create-text'>Text:</label>
+                    <textarea id='create-text' name="text" value={cardData.text} onChange={handleInputChange}></textarea>
                 </div>
                 <div className='modal-buttons-div'>
                     <button type="submit">Create</button>
