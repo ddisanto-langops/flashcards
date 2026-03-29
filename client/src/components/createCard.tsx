@@ -48,7 +48,7 @@ export function CreateCardModal({isVisible, closeModal}: CreateCardModalProps) {
         <>
         <div className="modal-background-div">
             <form className='modal-content-div' onSubmit={handleSubmit}>
-                <h1 className="modal-title">Create a Flashcard</h1>
+                <h1 className="modal-title">Create a Card</h1>
                 <div className='modal-field'>
                     <label htmlFor='create-title'>Title:</label>
                     <input id='create-title' name="title" value={cardData.title} onChange={handleInputChange}></input>

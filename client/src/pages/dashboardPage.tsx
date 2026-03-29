@@ -9,12 +9,8 @@ export function DashboardPage() {
     
     const [modalVisibility, setModalVisibility] = useState(false)
     const [createModalVisibility, setCreateModalVisibility] = useState(false);
-    const [modalData, setModalData] = useState<Flashcard>();
+    const [modalData, setModalData] = useState<Flashcard | null>(null);
 
-    const handleRowClick = (row: Flashcard) => {
-        setModalVisibility(true)
-        setModalData(row)
-    }
     
     const closeModal: () => void = () => {
         setModalVisibility(false)
@@ -36,7 +32,7 @@ export function DashboardPage() {
         <div className="page-container">
             <CreateCardModal isVisible={createModalVisibility} closeModal={closeCreateModal} />
             <Modal isVisible={modalVisibility} data={modalData} setModalData={setModalData} closeModal={closeModal}/>
-            <Table handleRowClick={handleRowClick} />
+            <Table />
         </div>
         </>
     )

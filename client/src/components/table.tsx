@@ -1,5 +1,5 @@
 import { Modal } from './modal.tsx'
-import type { RowSelectionState, Table } from '@tanstack/react-table'
+import type { RowSelectionState, Table, } from '@tanstack/react-table'
 import { formatDate } from "../../services/formatDate.ts"
 import type { Flashcard } from "../../types/flashcard.ts"
 import { getAllCards } from "../../services/api.ts"
@@ -43,7 +43,6 @@ const columns = [
     cell: info => formatDate(info.getValue())
   })
 ]
-
 
 export function Table() {
   const [selectedCard, setSelectedCard] = useState<Flashcard | null>(null);

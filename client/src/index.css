@@ -142,17 +142,25 @@ button:hover:not(:disabled) {
   height: 5em;
 }
 
-.modal-field{
+.modal-field {
+  justify-content: center;
+  justify-self: center;
   padding: 10px;
   margin: 10px;
-  display: grid;
+  display: flex;
   grid-gap: 20px;
   grid-template-columns: 200px 100%;
   font-size: 1.5rem;
-  
+  min-width: fit-content;
+  width: 100%; 
+}
+
+.modal-field label {
+  width: fit-content;
 }
 
 .modal-field input, textarea {
+  width: 70%;
   background-color: #121635;
   color: white;
   border-radius: 8px;
